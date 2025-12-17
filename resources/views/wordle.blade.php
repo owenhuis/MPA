@@ -15,15 +15,15 @@
 </form>
 
 <?php
-$wordToGuess = "ABCDE";
-$result = "ik werk niet";
-echo $_SERVER['REQUEST_METHOD'];
+
+$wordToGuess = "abcde";
+$result = "niks aan gegeven";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo "post werkt";
     if (strlen($userGuess) !== 5) {
         $result = "Please enter exactly 5 letters.";
-    } elseif (strtoupper($userGuess) === $wordToGuess) {
+    } elseif (strtolower($userGuess) === $wordToGuess) {
         $result = "Congratulations! You've guessed the word!";
     } else {
         $result = "Incorrect guess. Try again!";
@@ -31,7 +31,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
 }
 echo "<p>" . $result . "</p>";
-echo $_SERVER['REQUEST_METHOD'];
 ?>
 
 </html>
