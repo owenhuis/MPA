@@ -15,7 +15,9 @@
 </form>
 
 <?php
-
+include 'resources/pdo/pdo.php';
+$stmt = $pdo->prepare("SELECT * FROM wordle ORDER BY id");
+$stmt->execute();
 $wordToGuess = "abcde";
 $result = "niks aan gegeven";
 
