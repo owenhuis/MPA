@@ -16,7 +16,6 @@ return new class extends Migration
             $table->string('woord');
             $table->text('description');
             $table->integer('lengte');
-            $table->timestamp('time')->nullable();
         });
     }
 
