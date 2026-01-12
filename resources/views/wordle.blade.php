@@ -18,7 +18,7 @@
 $servername = "localhost";
 $username = "root";
 $password = "";
-$dbname = "mpa";
+$dbname = "laravel";
 
 try {
     $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
@@ -35,6 +35,7 @@ try {
     echo "Fout bij verbinden: " . $e->getMessage();
     $wordToGuess = "abcde"; // fallback
 }
+echo "<p>Debug: Het te raden woord is '" . htmlspecialchars($wordToGuess) . "'</p>";
 $result = "niks aan gegeven";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
