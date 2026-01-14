@@ -14,7 +14,5 @@ Route::post('/', function (Request $request) {
     request('guess4') .
     request('guess5');
 
-    $wordle = request('wordle');
-
     return view('wordle') -> with('userGuess', $userGuess);
 });
