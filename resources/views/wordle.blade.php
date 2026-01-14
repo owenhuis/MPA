@@ -34,11 +34,12 @@
 </script>
 
 <?php
+
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "laravel";
-if ($_SERVER['REQUEST_METHOD'] === 'GET' || !isset($wordToGuess)) {
+
     try {
         // Maak verbinding met de database
         $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
@@ -57,17 +58,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET' || !isset($wordToGuess)) {
         if ($row) {
             $wordToGuess = strtolower($row['woord']);
         } else {
-            $wordToGuess = "abcde"; // fallback als geen woord in database
+            $wordToGuess = "abcde"; // als geen woord in database
         }
     } catch (PDOException $e) {
         echo "Fout bij verbinden: " . $e->getMessage();
-        $wordToGuess = "abcde"; // fallback
+        $wordToGuess = "abcde"; // als er geen db verbinding is
     }
     echo "<p>Debug: Het te raden woord is '" . htmlspecialchars($wordToGuess) . "'</p>";
     $result = "niks aan gegeven";
-}
 
-
+// echo "<p>Het woord heeft " . strlen($wordToGuess) . " letters.</p>";
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userGuess = strtolower($_POST['guess'] . $_POST['guess2'] . $_POST['guess3'] . $_POST['guess4'] . $_POST['guess5']);
     if (strlen($userGuess) !== 5) {
