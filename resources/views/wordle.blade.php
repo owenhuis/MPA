@@ -15,6 +15,12 @@ $dbname = "laravel";
 
 // echo "<p>Het woord heeft " . strlen($wordToGuess) . " letters.</p>";
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+    // reset kansen
+    $_SESSION['attempts'] = 0;
+    $_SESSION['maxAttempts'] = 6;
+    $_SESSION['gameOver'] = false;
+
     try {
         // Maak verbinding met de database
         $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
@@ -42,16 +48,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     }
 }
 ?>
+
+
+<?php
+
+    echo "<p>Debug: Het te raden woord is '" . $_SESSION['wordToGuess'] . "'</p>";
+    $result = "niks aan gegeven";
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        
+    $wordToGuess = $_SESSION['wordToGuess'];
+    $_SESSION['attempts']++;
+
+    $attempts = $_SESSION['attempts'];
+    $maxAttempts = $_SESSION['maxAttempts'];
+
+    $userGuess = strtolower(
+        $_POST['guess'] .
+        $_POST['guess2'] .
+        $_POST['guess3'] .
+        $_POST['guess4'] .
+        $_POST['guess5']
+    );
+
+    if ($userGuess === $wordToGuess) {
+        $result = "🎉 Goed gedaan! Je hebt het woord geraden in $attempts pogingen.";
+        $_SESSION['gameOver'] = true;
+
+    } elseif ($attempts >= $maxAttempts) {
+        $result = "💀 Game over! Het woord was: <b>$wordToGuess</b>";
+        $_SESSION['gameOver'] = true;
+
+    } else {
+        $remaining = $maxAttempts - $attempts;
+        $result = "❌ Fout! Nog $remaining pogingen over.";
+    }        
+}
+?>
+
+<?php $gameOver = $_SESSION['gameOver'] ?? false; ?>
+
 <form method="POST">
     @csrf
-    <input type="text" name="guess"  maxlength="1" class="char" required>
-    <input type="text" name="guess2" maxlength="1" class="char" required>
-    <input type="text" name="guess3" maxlength="1" class="char" required>
-    <input type="text" name="guess4" maxlength="1" class="char" required>
-    <input type="text" name="guess5" maxlength="1" class="char" required>
+    <input type="text" name="guess" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
+    <input type="text" name="guess2" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
+    <input type="text" name="guess3" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
+    <input type="text" name="guess4" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
+    <input type="text" name="guess5" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
 
-    <button type="submit">Submit</button>
+    <button type="submit" <?= $gameOver ? 'disabled' : '' ?>>Submit</button>
 </form>
+
+<form method="GET">
+    <button type="submit">🔄 Nieuw spel</button>
+</form>
+
+
 <!--  JavaScript om automatisch naar het volgende invoerveld te gaan -->
 <script>
     const inputs = document.querySelectorAll('.char');
@@ -72,22 +123,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     });
 </script>
 <?php
-
-    echo "<p>Debug: Het te raden woord is '" . $_SESSION['wordToGuess'] . "'</p>";
-    $result = "niks aan gegeven";
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $wordToGuess = $_SESSION['wordToGuess'] ?? '';
-        $userGuess = strtolower($_POST['guess'] . $_POST['guess2'] . $_POST['guess3'] . $_POST['guess4'] . $_POST['guess5']);
-        if (strlen($userGuess) !== 5) {
-            $result = "Please enter exactly 5 letters.";
-        } elseif ($userGuess === $wordToGuess) {
-            $result = "Congratulations! You've guessed the word!";
-        } else {
-            $result = "Incorrect guess. Try again!";
-        }
-        
-}
-
 echo "<p>" . $result . "</p>";
 ?>
 
