@@ -1,8 +1,14 @@
+
 <?php
 session_start();
 ?>
 <html>
+<head>
+    <title>Wordle</title>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+</head>
 <body>
+
 
 <h1>Wordle</h1>
 
@@ -20,6 +26,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $_SESSION['attempts'] = 0;
     $_SESSION['maxAttempts'] = 6;
     $_SESSION['gameOver'] = false;
+    $_SESSION['guesses'] = [];
+
 
     try {
         // Maak verbinding met de database
@@ -81,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 }
 
 
-    echo "<p>Debug: Het te raden woord is '" . $_SESSION['wordToGuess'] . "'</p>";
+    // echo "<p>Debug: Het te raden woord is '" . $_SESSION['wordToGuess'] . "'</p>";
     $result = "niks aan gegeven";
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         
@@ -100,13 +108,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     );
     $kleuren = bepaalKleuren($userGuess, $wordToGuess);
 
-    for ($i = 0; $i < 5; $i++) {
-        echo "<span style='display:inline-block;width:30px;height:30px;line-height:30px;
-            text-align:center;margin:2px;background-color:{$kleuren[$i]};
-            color:white;font-weight:bold;'>"
-            . strtoupper($userGuess[$i]) .
-            "</span>";
-    }
+    $_SESSION['guesses'][] = [
+        'word' => $userGuess,
+        'colors' => $kleuren
+    ];
+
+    if (!empty($_SESSION['guesses'])) {
+                ?>
+                <div class="wordle-board">
+                <?php
+                for ($row = 0; $row < 6; $row++) {
+
+                    echo '<div class="row">';
+
+                    if (isset($_SESSION['guesses'][$row])) {
+                        $guess = $_SESSION['guesses'][$row];
+
+                        for ($i = 0; $i < 5; $i++) {
+                            echo "<div class='tile {$guess['colors'][$i]}'>"
+                                . strtoupper($guess['word'][$i]) .
+                                "</div>";
+                        }
+                    } else {
+                        for ($i = 0; $i < 5; $i++) {
+                            echo "<div class='tile'></div>";
+                        }
+                    }
+
+                    echo '</div>';
+                }
+                ?>
+                </div>
+                <?php
+                ;
+            }
+            echo "<br>";
     if ($userGuess === $wordToGuess) {
         $result = "🎉 Goed gedaan! Je hebt het woord geraden in $attempts pogingen.";
         $_SESSION['gameOver'] = true;
@@ -123,18 +159,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 ?>
 
 <?php $gameOver = $_SESSION['gameOver'] ?? false; ?>
+<div class="guess-inputs">
+    <form method="POST">
+        @csrf
+        <input type="text" name="guess" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
+        <input type="text" name="guess2" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
+        <input type="text" name="guess3" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
+        <input type="text" name="guess4" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
+        <input type="text" name="guess5" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
 
-<form method="POST">
-    @csrf
-    <input type="text" name="guess" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
-    <input type="text" name="guess2" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
-    <input type="text" name="guess3" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
-    <input type="text" name="guess4" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
-    <input type="text" name="guess5" maxlength="1" class="char" required <?= $gameOver ? 'disabled' : '' ?>>
-
-    <button type="submit" <?= $gameOver ? 'disabled' : '' ?>>Submit</button>
-</form>
-
+        <button type="submit" <?= $gameOver ? 'disabled' : '' ?>>Submit</button>
+    </form>
+</div>
 <form method="GET">
     <button type="submit">🔄 Nieuw spel</button>
 </form>
