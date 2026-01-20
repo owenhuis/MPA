@@ -176,6 +176,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 </form>
 
 
+
 <!--  JavaScript om automatisch naar het volgende invoerveld te gaan -->
 <script>
     const inputs = document.querySelectorAll('.char');
@@ -198,5 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 <?php
 echo "<p>" . $result . "</p>";
 ?>
-
+<div class="toGames">
+    <button onclick="window.location='{{ route('welcome') }}'"> Terug naar welkom</button>
+</div>
 </html>
