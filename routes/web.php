@@ -7,12 +7,6 @@ Route::get('/', function () {
 });
 
 Route::post('/', function (Request $request) {
-    $userGuess =
-    request('guess') .
-    request('guess2') .
-    request('guess3') .
-    request('guess4') .
-    request('guess5');
 
-    return view('wordle') -> with('userGuess', $userGuess);
+    return view('wordle');
 });

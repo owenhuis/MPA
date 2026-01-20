@@ -51,6 +51,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 
 <?php
+    function bepaalKleuren($guess, $word) {
+    $result = array_fill(0, 5, 'gray');
+
+    $wordLetters = str_split($word);
+    $guessLetters = str_split($guess);
+
+    // 1️⃣ Eerst: groen
+    for ($i = 0; $i < 5; $i++) {
+        if ($guessLetters[$i] === $wordLetters[$i]) {
+            $result[$i] = 'green';
+            $wordLetters[$i] = null; // letter opgebruikt
+            $guessLetters[$i] = null;
+        }
+    }
+
+    // 2️⃣ Daarna: geel
+    for ($i = 0; $i < 5; $i++) {
+        if ($guessLetters[$i] !== null) {
+            $pos = array_search($guessLetters[$i], $wordLetters);
+            if ($pos !== false) {
+                $result[$i] = 'yellow';
+                $wordLetters[$pos] = null; // letter opgebruikt
+            }
+        }
+    }
+
+    return $result;
+}
+
 
     echo "<p>Debug: Het te raden woord is '" . $_SESSION['wordToGuess'] . "'</p>";
     $result = "niks aan gegeven";
@@ -69,7 +98,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $_POST['guess4'] .
         $_POST['guess5']
     );
+    $kleuren = bepaalKleuren($userGuess, $wordToGuess);
 
+    for ($i = 0; $i < 5; $i++) {
+        echo "<span style='display:inline-block;width:30px;height:30px;line-height:30px;
+            text-align:center;margin:2px;background-color:{$kleuren[$i]};
+            color:white;font-weight:bold;'>"
+            . strtoupper($userGuess[$i]) .
+            "</span>";
+    }
     if ($userGuess === $wordToGuess) {
         $result = "🎉 Goed gedaan! Je hebt het woord geraden in $attempts pogingen.";
         $_SESSION['gameOver'] = true;
