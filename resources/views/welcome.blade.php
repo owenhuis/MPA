@@ -11,7 +11,7 @@
         <h1>Welcome to my multi game page</h1>
     </div>
     <div class="toGames">
-        <button onclick="window.location='{{ route('wordle') }}'"> wordle</button>
+        <a href="{{ route('wordle') }}"><button>wordle</button></a>
     </div>
 </body>
 </html>
