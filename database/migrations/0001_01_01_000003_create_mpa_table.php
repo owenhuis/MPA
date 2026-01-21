@@ -17,6 +17,16 @@ return new class extends Migration
             $table->text('description');
             $table->integer('lengte');
         });
+
+        Schema::create('muziek', function (Blueprint $table) {
+            $table->id()->auto_increment()->primary();
+            $table->string('titel');
+            $table->string('artiest');
+            $table->string('album');
+            $table->integer('jaar');
+            $table->string('genre');
+            $table->string('song_url');
+        });
     }
 
     /**

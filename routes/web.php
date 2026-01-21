@@ -14,3 +14,12 @@ Route::get('/wordle', function () {
 Route::post('/wordle', function (Request $request) {
     return view('wordle');
 })->name('wordle.post');
+
+
+Route::get('/muziek', function () {
+    return view('muziek');
+})->name('muziek');
+
+Route::post('/muziek', function (Request $request) {
+    return view('muziek');
+})->name('muziek.post');

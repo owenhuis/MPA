@@ -13,5 +13,8 @@
     <div class="toGames">
         <a href="{{ route('wordle') }}"><button>wordle</button></a>
     </div>
+    <div class="toGames">
+        <a href="{{ route('muziek') }}"><button>muziek</button></a>
+    </div>
 </body>
 </html>
