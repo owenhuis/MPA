@@ -1,3 +1,28 @@
+<?php
+$servername = "localhost";
+$username = "root";
+$password = "";
+$dbname = "laravel";
+try {
+        // Maak verbinding met de database
+        $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        // haal het hoogste gebruikte id op
+        $stmt = $pdo->prepare("SELECT * FROM muziek ORDER BY id desc LIMIT 1");
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        // kies een random id tussen 1 en het hoogste id
+        $rndm = random_int(1,$row['id']);
+        // haal het woord met dat id op
+        $stmt = $pdo->prepare("SELECT * FROM muziek WHERE id = $rndm LIMIT 1");
+        $stmt->execute();
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    } catch (PDOException $e) {
+        echo "Fout bij verbinden: " . $e->getMessage();
+        $wordToGuess = "abcde"; // als er geen db verbinding is
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,6 +40,11 @@
         <button onclick="window.location='{{ route('welcome') }}'"> Terug naar welkom</button>
     </div>
 
+    <div>
+        <audio controls>
+            <source src="{{ asset($row['song_path']) }}" type="audio/mpeg">
+        </audio>
+    </div>
     <div>
         <form method="POST">
             @csrf

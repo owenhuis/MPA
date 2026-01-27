@@ -25,7 +25,7 @@ return new class extends Migration
             $table->string('album');
             $table->integer('jaar');
             $table->string('genre');
-            $table->string('song_url');
+            $table->string('song_path');
         });
     }
 

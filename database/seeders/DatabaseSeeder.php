@@ -91,5 +91,9 @@ class DatabaseSeeder extends Seeder
     ['woord' => 'raft',  'description' => 'Transport', 'lengte' => 5],
     ['woord' => 'subway','description' => 'Transport', 'lengte' => 5],
 ]);
+
+    db::table('muziek')->insert([
+        ['titel' => 'sample', 'artiest' => 'sample', 'album' => 'sample', 'jaar' => 2026, 'genre' => 'sample', 'song_path' => 'songs/sample.mp3']
+    ]);
     }
 }

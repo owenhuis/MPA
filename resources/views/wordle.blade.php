@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 ?>
@@ -60,27 +59,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 <?php
     function bepaalKleuren($guess, $word) {
+    // begin alles met grijs
     $result = array_fill(0, 5, 'gray');
-
+    // alle letters in arrays
     $wordLetters = str_split($word);
     $guessLetters = str_split($guess);
 
-    // 1️⃣ Eerst: groen
+    // groen
     for ($i = 0; $i < 5; $i++) {
+        // zit de letter op de juiste plek
         if ($guessLetters[$i] === $wordLetters[$i]) {
             $result[$i] = 'green';
-            $wordLetters[$i] = null; // letter opgebruikt
-            $guessLetters[$i] = null;
+            $wordLetters[$i] = null; // letter kan niet herhaald worden
+            $guessLetters[$i] = null; // letter al verwerkt
         }
     }
 
-    // 2️⃣ Daarna: geel
+    //geel
     for ($i = 0; $i < 5; $i++) {
+        // moet de letter nog gecheckt worden
         if ($guessLetters[$i] !== null) {
+            // checkt de positie van de letter in het woord
             $pos = array_search($guessLetters[$i], $wordLetters);
+            // bestaat de letter in het woord( ja / True , nee / False)
             if ($pos !== false) {
                 $result[$i] = 'yellow';
-                $wordLetters[$pos] = null; // letter opgebruikt
+                $wordLetters[$pos] = null; // letter kan niet herhaald worden
             }
         }
     }
