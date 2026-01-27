@@ -3,6 +3,7 @@ $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "laravel";
+
 try {
         // Maak verbinding met de database
         $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
@@ -17,9 +18,18 @@ try {
         $stmt = $pdo->prepare("SELECT * FROM muziek WHERE id = $rndm LIMIT 1");
         $stmt->execute();
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($row) {
+            $_SESSION['songToGuess'] = strtolower($row['titel']);
+            $songToGuess = $_SESSION['songToGuess'];
+        } else {
+            $songToGuess = "abcde"; // als geen song in database
+        }
+
+
     } catch (PDOException $e) {
         echo "Fout bij verbinden: " . $e->getMessage();
-        $wordToGuess = "abcde"; // als er geen db verbinding is
+        $songToGuess = "abcde"; // als er geen db verbinding is
 }
 ?>
 
@@ -73,19 +83,19 @@ if (!isset($_SESSION['gameOver'])) {
     $_SESSION['gameOver'] = false;
 }
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$_SESSION['gameOver']) {
-    $wordToGuess = "MUSIC";
+    $songToGuess = "MUSIC";
     $maxAttempts = 6;
     $_SESSION['attempts'] = $_SESSION['attempts'] ?? 0;
     $attempts = $_SESSION['attempts'];
 
 
     $attempts++;
-    if ($userGuess === $wordToGuess) {
+    if ($userGuess === $songToGuess) {
         $result = "🎉 Goed gedaan! Je hebt het woord geraden in $attempts pogingen.";
         $_SESSION['gameOver'] = true;
 
     } elseif ($attempts >= $maxAttempts) {
-        $result = "💀 Game over! Het woord was: <b>$wordToGuess</b>";
+        $result = "💀 Game over! Het woord was: <b>$songToGuess</b>";
         $_SESSION['gameOver'] = true;
 
     } else {
