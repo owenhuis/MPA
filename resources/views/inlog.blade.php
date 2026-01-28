@@ -2,12 +2,94 @@
 session_start();
 
 // Bepaal de pagina van afkomst
-$referrer = $_POST['referrer'] ?? $_SERVER['HTTP_REFERER'] ?? '/';
+$referrer = $_POST['referrer'] ?? $_GET['referrer'] ?? $_SERVER['HTTP_REFERER'] ?? '/';
 // Valideer de referrer om security issues te voorkomen
 if (filter_var($referrer, FILTER_VALIDATE_URL)) {
     // OK
 } else {
     $referrer = '/';
+}
+
+$register = $_GET['register'] ?? 0;
+$error = '';
+$success = '';
+
+// Database verbinding
+$servername = "localhost";
+$dbusername = "root";
+$dbpassword = "";
+$dbname = "laravel";
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $action = $_POST['action'] ?? '';
+    
+    try {
+        $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $dbusername, $dbpassword);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        if ($action === 'register') {
+            $inputUsername = trim($_POST['username'] ?? '');
+            $inputEmail = trim($_POST['email'] ?? '');
+            $inputPassword = trim($_POST['password'] ?? '');
+            $inputPasswordConfirm = trim($_POST['password_confirm'] ?? '');
+
+            if (empty($inputUsername) || empty($inputEmail) || empty($inputPassword)) {
+                $error = "Alle velden zijn verplicht.";
+            } elseif ($inputPassword !== $inputPasswordConfirm) {
+                $error = "Wachtwoorden komen niet overeen.";
+            } elseif (strlen($inputPassword) < 6) {
+                $error = "Wachtwoord moet minimaal 6 karakters zijn.";
+            } else {
+                $stmt = $pdo->prepare("SELECT id FROM users WHERE username = :username LIMIT 1");
+                $stmt->bindParam(':username', $inputUsername);
+                $stmt->execute();
+                
+                if ($stmt->rowCount() > 0) {
+                    $error = "Username bestaat al.";
+                } else {
+                    $hashedPassword = password_hash($inputPassword, PASSWORD_DEFAULT);
+                    $stmt = $pdo->prepare("INSERT INTO users (username, email, password, created_at, updated_at) VALUES (:username, :email, :password, NOW(), NOW())");
+                    $stmt->bindParam(':username', $inputUsername);
+                    $stmt->bindParam(':email', $inputEmail);
+                    $stmt->bindParam(':password', $hashedPassword);
+                    $stmt->execute();
+                    
+                    $success = "Account succesvol aangemaakt! Je bent nu ingelogd.";
+                    
+                    $stmt = $pdo->prepare("SELECT id, username FROM users WHERE username = :username LIMIT 1");
+                    $stmt->bindParam(':username', $inputUsername);
+                    $stmt->execute();
+                    $user = $stmt->fetch(PDO::FETCH_ASSOC);
+                    
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    
+                    header("Location: " . $referrer);
+                    exit();
+                }
+            }
+        } elseif ($action === 'login') {
+            $inputUsername = trim($_POST['username'] ?? '');
+            $inputPassword = trim($_POST['password'] ?? '');
+
+            $stmt = $pdo->prepare("SELECT id, username, password FROM users WHERE username = :username LIMIT 1");
+            $stmt->bindParam(':username', $inputUsername);
+            $stmt->execute();
+            $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if ($user && password_verify($inputPassword, $user['password'])) {
+                $_SESSION['user_id'] = $user['id'];
+                $_SESSION['username'] = $user['username'];
+                
+                header("Location: " . $referrer);
+                exit();
+            } else {
+                $error = "Ongeldige gebruikersnaam of wachtwoord.";
+            }
+        }
+    } catch (PDOException $e) {
+        $error = "Databasefout: " . $e->getMessage();
+    }
 }
 ?>
 
@@ -18,64 +100,63 @@ if (filter_var($referrer, FILTER_VALIDATE_URL)) {
 </head>
 
 <body>
+    <?php if ($error): ?>
+        <div style="color: red; margin: 10px; padding: 10px; border: 1px solid red; background: #fee;">
+            <?php echo htmlspecialchars($error); ?>
+        </div>
+    <?php endif; ?>
+    <?php if ($success): ?>
+        <div style="color: green; margin: 10px; padding: 10px; border: 1px solid green; background: #efe;">
+            <?php echo htmlspecialchars($success); ?>
+        </div>
+    <?php endif; ?>
 
-    <h1>login</h1>
+    <?php if ($register == 1): ?>
+        <h1>Registreren</h1>
 
-    <?php
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "laravel";
-    ?>
+        <form method="POST">
+            @csrf
+            <input type="hidden" name="action" value="register">
+            <label for="reg_username">Username:</label>
+            <input type="text" id="reg_username" name="username" required>
+            <br>
+            <label for="reg_email">Email:</label>
+            <input type="email" id="reg_email" name="email" required>
+            <br>
+            <label for="reg_password">Password:</label>
+            <input type="password" id="reg_password" name="password" required>
+            <br>
+            <label for="reg_password_confirm">Bevestig Password:</label>
+            <input type="password" id="reg_password_confirm" name="password_confirm" required>
+            <br>
+            <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
+            <button type="submit">Registreren</button>
+        </form>
+        <form method="GET" action="">
+            <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
+            <button type="submit">Terug naar Login</button>
+        </form>
+    <?php else: ?>
+        <h1>Login</h1>
 
-    <form method="POST">
-        @csrf
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-        <br>
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-        <br>
-        <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
-        <button type="submit">Login</button>
-    </form>
-    <form method="GET" action="">
-        <input type="hidden" name="register" value="1">
-        <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
-        <button type="submit">aanmelden</button>
-    </form>
+        <form method="POST">
+            @csrf
+            <input type="hidden" name="action" value="login">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" required>
+            <br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <br>
+            <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
+            <button type="submit">Login</button>
+        </form>
+        <form method="GET" action="">
+            <input type="hidden" name="register" value="1">
+            <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
+            <button type="submit">Aanmelden</button>
+        </form>
+    <?php endif; ?>
 
 </body>
-<?php
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $inputUsername = trim($_POST['username'] ?? '');
-    $inputPassword = trim($_POST['password'] ?? '');
-
-    try {
-        // Maak verbinding met de database
-        $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        // Bereid en voer de query uit om de gebruiker te vinden
-        $stmt = $pdo->prepare("SELECT * FROM users WHERE username = :username LIMIT 1");
-        $stmt->bindParam(':username', $inputUsername);
-        $stmt->execute();
-        $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-        if ($user && password_verify($inputPassword, $user['password'])) {
-            // Stel sessievariabelen in
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['username'] = $user['username'];
-            
-            // Redirect terug naar de pagina van afkomst
-            header("Location: " . $referrer);
-            exit();
-        } else {
-            echo "Invalid username or password.";
-        }
-    } catch (PDOException $e) {
-        echo "Fout bij verbinden: " . $e->getMessage();
-    }
-}
-?>
 </html>

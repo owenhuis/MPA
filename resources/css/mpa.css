@@ -75,7 +75,7 @@
     }
 }
 
-.login {
+.login { 
     background: linear-gradient(135deg, #121213 0%, #1a1a1c 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #ffffff;
@@ -85,13 +85,12 @@
     justify-content: center;
     margin: 0;
     padding: 20px;
-}
 
-.login body {
+body {
     margin: 0;
 }
 
-.login h1 {
+ h1 {
     text-align: center;
     font-size: 3rem;
     margin-bottom: 40px;
@@ -104,7 +103,7 @@
     text-transform: uppercase;
 }
 
-.login form {
+ form {
     background-color: #1e1e20;
     padding: 40px;
     border-radius: 12px;
@@ -114,11 +113,11 @@
     margin-bottom: 20px;
 }
 
-.login form:last-of-type {
+ form:last-of-type {
     margin-bottom: 0;
 }
 
-.login label {
+ label {
     display: block;
     margin-top: 20px;
     margin-bottom: 8px;
@@ -129,12 +128,12 @@
     letter-spacing: 0.5px;
 }
 
-.login label:first-of-type {
+ label:first-of-type {
     margin-top: 0;
 }
 
-.login input[type="text"],
-.login input[type="password"] {
+ input[type="text"],
+ input[type="password"] {
     width: 100%;
     padding: 12px 16px;
     margin-bottom: 16px;
@@ -147,20 +146,20 @@
     transition: all 0.3s ease;
 }
 
-.login input[type="text"]:focus,
-.login input[type="password"]:focus {
+ input[type="text"]:focus,
+ input[type="password"]:focus {
     outline: none;
     border-color: #538d4e;
     background-color: #3a3a3d;
     box-shadow: 0 0 0 3px rgba(83, 141, 78, 0.1);
 }
 
-.login input[type="text"]::placeholder,
-.login input[type="password"]::placeholder {
+ input[type="text"]::placeholder,
+ input[type="password"]::placeholder {
     color: #888;
 }
 
-.login button {
+ button {
     width: 100%;
     padding: 14px 20px;
     margin-top: 24px;
@@ -177,28 +176,28 @@
     box-shadow: 0 4px 12px rgba(83, 141, 78, 0.3);
 }
 
-.login button:hover {
+button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(83, 141, 78, 0.4);
     background: linear-gradient(135deg, #6ba45f 0%, #78b366 100%);
 }
 
-.login button:active {
+button:active {
     transform: translateY(0);
     box-shadow: 0 2px 8px rgba(83, 141, 78, 0.2);
 }
 
-.login form:last-of-type button {
+form:last-of-type button {
     background: linear-gradient(135deg, #5e5e61 0%, #6b6b6e 100%);
     box-shadow: 0 4px 12px rgba(94, 94, 97, 0.3);
 }
 
-.login form:last-of-type button:hover {
+form:last-of-type button:hover {
     background: linear-gradient(135deg, #6b6b6e 0%, #787a7d 100%);
     box-shadow: 0 6px 20px rgba(94, 94, 97, 0.4);
 }
 
-.login br {
+br {
     display: none;
 }
 
@@ -217,4 +216,5 @@
         padding: 10px 14px;
         font-size: 16px;
     }
+}
 }
