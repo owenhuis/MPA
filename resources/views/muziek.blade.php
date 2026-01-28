@@ -1,4 +1,5 @@
 <?php
+session_start();
 $servername = "localhost";
 $username = "root";
 $password = "";
@@ -63,14 +64,19 @@ try {
             <button type="submit">Submit</button>
         </form>
     </div>
+    <!-- reset button -->
+    <div>
+        <form method="GET">
+            <button type="submit">Reset</button>
+        </form>
+    </div>
 
 </body>
 
 
 
 <?php
-$result = "";   
-session_start();
+$result = "niets ingevuld";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userGuess = strtoupper(trim($_POST['userGuess'] ?? ''));
@@ -82,12 +88,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (!isset($_SESSION['gameOver'])) {
     $_SESSION['gameOver'] = false;
 }
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && !$_SESSION['gameOver']) {
-    $songToGuess = "MUSIC";
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['gameOver'] === True) {
+    $songToGuess = $_SESSION['songToGuess'];
     $maxAttempts = 6;
     $_SESSION['attempts'] = $_SESSION['attempts'] ?? 0;
     $attempts = $_SESSION['attempts'];
 
+    echo $songToGuess;
 
     $attempts++;
     if ($userGuess === $songToGuess) {
