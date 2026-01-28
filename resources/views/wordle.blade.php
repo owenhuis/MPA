@@ -1,7 +1,7 @@
 <?php
 session_start();
 ?>
-<html>
+<html class="wordle">
 <head>
     <title>Wordle</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])

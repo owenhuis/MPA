@@ -23,3 +23,11 @@ Route::get('/muziek', function () {
 Route::post('/muziek', function (Request $request) {
     return view('muziek');
 })->name('muziek.post');
+
+Route::get('/inlog', function () {
+    return view('inlog');
+})->name('inlog');
+
+Route::post('/inlog', function (Request $request) {
+    return view('inlog');
+})->name('inlog.post');
