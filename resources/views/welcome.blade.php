@@ -15,11 +15,16 @@
     <div class="container">
         <h1>Welcome to my multi game page</h1>
     </div>
+    <div class="favoriteFilters">
+        <h2>Choose your game:</h2>
+    </div>
     <div class="toGames">
         <a href="{{ route('wordle') }}"><button>wordle</button></a>
+        <button>⭐</button>
     </div>
     <div class="toGames">
         <a href="{{ route('muziek') }}"><button>muziek</button></a>
+        <button>⭐</button>
     </div>
 </body>
 </html>

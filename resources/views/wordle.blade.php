@@ -18,6 +18,10 @@ $username = "root";
 $password = "";
 $dbname = "laravel";
 
+ // Maak verbinding met de database
+$pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 // echo "<p>Het woord heeft " . strlen($wordToGuess) . " letters.</p>";
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
@@ -29,9 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
 
     try {
-        // Maak verbinding met de database
-        $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        
         // haal het hoogste gebruikte id op
         $stmt = $pdo->prepare("SELECT * FROM wordle ORDER BY id desc LIMIT 1");
         $stmt->execute();
@@ -147,9 +149,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
                 ;
             }
             echo "<br>";
-    if ($userGuess === $wordToGuess) {
+    if ($userGuess === $wordToGuess and $_SESSION['gameOver'] === False and $attempts >= 1) {
+        $stmt = $pdo->prepare("SELECT wordle_score FROM scores WHERE naam = :naam LIMIT 1");
+        $stmt->bindParam(':naam', $_SESSION['username']);
+        $stmt->execute();
+        $old_score = $stmt->fetch(PDO::FETCH_ASSOC);
         $result = "🎉 Goed gedaan! Je hebt het woord geraden in $attempts pogingen.";
         $_SESSION['gameOver'] = true;
+        $_SESSION['wordle_score'] = $attempts * 1000 + $old_score['wordle_score'];
+        $stmt = $pdo->prepare("UPDATE scores SET wordle_score = :wordle_score WHERE naam = :naam");
+        $stmt->bindParam(':wordle_score', $_SESSION['wordle_score']);
+        $stmt->bindParam(':naam', $_SESSION['username']);
+        $stmt->execute();
 
     } elseif ($attempts >= $maxAttempts) {
         $result = "💀 Game over! Het woord was: <b>$wordToGuess</b>";
