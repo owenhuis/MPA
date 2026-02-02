@@ -27,6 +27,13 @@ return new class extends Migration
             $table->string('genre');
             $table->string('song_path');
         });
+
+        Schema::create('scores', function (Blueprint $table) {
+            $table->id();
+            $table->string('naam');
+            $table->float('wordle_score');
+            $table->float('muziek_score');
+        });
     }
 
     /**

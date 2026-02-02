@@ -63,6 +63,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     
                     $_SESSION['user_id'] = $user['id'];
                     $_SESSION['username'] = $user['username'];
+
+                    $stmt = $pdo->prepare("INSERT INTO scores (naam, wordle_score, muziek_score) VALUES (:naam, 0, 0)");
+                    $stmt->bindParam(':naam', $inputUsername);
+                    $stmt->execute();
                     
                     header("Location: " . $referrer);
                     exit();
