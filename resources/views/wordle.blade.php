@@ -156,11 +156,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         $old_score = $stmt->fetch(PDO::FETCH_ASSOC);
         $result = "🎉 Goed gedaan! Je hebt het woord geraden in $attempts pogingen.";
         $_SESSION['gameOver'] = true;
-        $_SESSION['wordle_score'] = $attempts * 1000 + $old_score['wordle_score'];
-        $stmt = $pdo->prepare("UPDATE scores SET wordle_score = :wordle_score WHERE naam = :naam");
-        $stmt->bindParam(':wordle_score', $_SESSION['wordle_score']);
-        $stmt->bindParam(':naam', $_SESSION['username']);
-        $stmt->execute();
+
+        // points for this round (higher is better)
+        $points = max(0, (7 - $attempts) * 1000);
+
+        // update cumulative score table if user logged in
+        if (!empty($_SESSION['username'])) {
+            $_SESSION['wordle_score'] = ($old_score['wordle_score'] ?? 0) + $points;
+            $stmt = $pdo->prepare("UPDATE scores SET wordle_score = :wordle_score WHERE naam = :naam");
+            $stmt->bindParam(':wordle_score', $_SESSION['wordle_score']);
+            $stmt->bindParam(':naam', $_SESSION['username']);
+            $stmt->execute();
+
+            // insert into leaderboard for logged-in user
+            if (!empty($_SESSION['user_id'])) {
+                $ins = $pdo->prepare("INSERT INTO leaderboard_scores (user_id, name, game, score, created_at, updated_at) VALUES (:user_id, :name, 'wordle', :score, NOW(), NOW())");
+                $ins->bindParam(':user_id', $_SESSION['user_id']);
+                $ins->bindParam(':name', $_SESSION['username']);
+                $ins->bindParam(':score', $points);
+                $ins->execute();
+            }
+        } else {
+            // guest: store in session only
+            $_SESSION['guest_scores'][$_SESSION['wordToGuess']] = $points;
+        }
 
     } elseif ($attempts >= $maxAttempts) {
         $result = "💀 Game over! Het woord was: <b>$wordToGuess</b>";

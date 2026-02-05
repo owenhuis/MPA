@@ -17,14 +17,18 @@
     </div>
     <div class="favoriteFilters">
         <h2>Choose your game:</h2>
+        <a href="{{ route('favorites') }}"><button>Mijn Favorieten</button></a>
     </div>
+
+    @foreach($games as $game)
     <div class="toGames">
-        <a href="{{ route('wordle') }}"><button>wordle</button></a>
-        <button>⭐</button>
+        <a href="{{ url($game->route) }}"><button>{{ $game->name }}</button></a>
+        <a href="{{ route('leaderboard', $game->slug) }}" style="margin-left:8px;"><button>Leaderboard</button></a>
+        <form method="POST" action="{{ route('games.favorite', $game->id) }}" style="display:inline; margin-left:8px;">
+            @csrf
+            <button type="submit">{{ in_array($game->id, $favoriteIds) ? '★' : '☆' }}</button>
+        </form>
     </div>
-    <div class="toGames">
-        <a href="{{ route('muziek') }}"><button>muziek</button></a>
-        <button>⭐</button>
-    </div>
+    @endforeach
 </body>
 </html>

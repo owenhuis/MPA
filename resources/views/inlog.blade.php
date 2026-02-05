@@ -67,7 +67,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $stmt = $pdo->prepare("INSERT INTO scores (naam, wordle_score, muziek_score) VALUES (:naam, 0, 0)");
                     $stmt->bindParam(':naam', $inputUsername);
                     $stmt->execute();
-                    
+
+                    // Migrate guest favorites into the persistent favorites table
+                    if (!empty($_SESSION['guest_favorites']) && is_array($_SESSION['guest_favorites'])) {
+                        foreach ($_SESSION['guest_favorites'] as $game_id) {
+                            $insertFav = $pdo->prepare("INSERT IGNORE INTO favorites (user_id, game_id, created_at, updated_at) VALUES (:user_id, :game_id, NOW(), NOW())");
+                            $insertFav->bindParam(':user_id', $user['id']);
+                            $insertFav->bindParam(':game_id', $game_id);
+                            $insertFav->execute();
+                        }
+                        unset($_SESSION['guest_favorites']);
+                    }
+
+                    // Move guest scores into user session and persist them to leaderboard for this user
+                    if (!empty($_SESSION['guest_scores']) && is_array($_SESSION['guest_scores'])) {
+                        foreach ($_SESSION['guest_scores'] as $game_id => $score) {
+                            // find game slug by id
+                            $gstmt = $pdo->prepare("SELECT slug FROM games WHERE id = :id LIMIT 1");
+                            $gstmt->bindParam(':id', $game_id);
+                            $gstmt->execute();
+                            $g = $gstmt->fetch(PDO::FETCH_ASSOC);
+                            $slug = $g['slug'] ?? 'unknown';
+
+                            $insertL = $pdo->prepare("INSERT INTO leaderboard_scores (user_id, name, game, score, created_at, updated_at) VALUES (:user_id, :name, :game, :score, NOW(), NOW())");
+                            $insertL->bindParam(':user_id', $user['id']);
+                            $insertL->bindParam(':name', $user['username']);
+                            $insertL->bindParam(':game', $slug);
+                            $insertL->bindParam(':score', $score);
+                            $insertL->execute();
+                        }
+                        $_SESSION['user_scores'] = $_SESSION['guest_scores'];
+                        unset($_SESSION['guest_scores']);
+                    }
+
                     header("Location: " . $referrer);
                     exit();
                 }
@@ -84,7 +116,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if ($user && password_verify($inputPassword, $user['password'])) {
                 $_SESSION['user_id'] = $user['id'];
                 $_SESSION['username'] = $user['username'];
-                
+
+                // Migrate guest favorites and scores to user's session/persistent data
+                if (!empty($_SESSION['guest_favorites']) && is_array($_SESSION['guest_favorites'])) {
+                    foreach ($_SESSION['guest_favorites'] as $game_id) {
+                        $insertFav = $pdo->prepare("INSERT IGNORE INTO favorites (user_id, game_id, created_at, updated_at) VALUES (:user_id, :game_id, NOW(), NOW())");
+                        $insertFav->bindParam(':user_id', $user['id']);
+                        $insertFav->bindParam(':game_id', $game_id);
+                        $insertFav->execute();
+                    }
+                    unset($_SESSION['guest_favorites']);
+                }
+                if (!empty($_SESSION['guest_scores']) && is_array($_SESSION['guest_scores'])) {
+                    $_SESSION['user_scores'] = $_SESSION['guest_scores'];
+                    unset($_SESSION['guest_scores']);
+                }
+
                 header("Location: " . $referrer);
                 exit();
             } else {

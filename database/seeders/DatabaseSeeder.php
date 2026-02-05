@@ -95,5 +95,8 @@ class DatabaseSeeder extends Seeder
     db::table('muziek')->insert([
         ['titel' => 'sample', 'artiest' => 'sample', 'album' => 'sample', 'jaar' => 2026, 'genre' => 'sample', 'song_path' => 'sounds/sample.mp3']
     ]);
+
+        // Seed leaderboard dummy scores
+        $this->call(\Database\Seeders\LeaderboardSeeder::class);
     }
 }

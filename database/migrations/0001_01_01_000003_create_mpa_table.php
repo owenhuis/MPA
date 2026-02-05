@@ -42,5 +42,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('wordle');
+        Schema::dropIfExists('muziek');
+        Schema::dropIfExists('scores');
     }
 };

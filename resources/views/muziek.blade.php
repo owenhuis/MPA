@@ -88,18 +88,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 if (!isset($_SESSION['gameOver'])) {
     $_SESSION['gameOver'] = false;
 }
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['gameOver'] === True) {
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && $_SESSION['gameOver'] === false) {
     $songToGuess = $_SESSION['songToGuess'];
     $maxAttempts = 6;
     $_SESSION['attempts'] = $_SESSION['attempts'] ?? 0;
     $attempts = $_SESSION['attempts'];
 
-    echo $songToGuess;
-
     $attempts++;
+    $_SESSION['attempts'] = $attempts;
+
     if ($userGuess === $songToGuess) {
         $result = "🎉 Goed gedaan! Je hebt het woord geraden in $attempts pogingen.";
         $_SESSION['gameOver'] = true;
+        // points for this round
+        $points = max(0, (7 - $attempts) * 1000);
+        if (!empty($_SESSION['user_id'])) {
+            // persist to leaderboard
+            $stmtIns = $pdo->prepare("INSERT INTO leaderboard_scores (user_id, name, game, score, created_at, updated_at) VALUES (:user_id, :name, 'muziek', :score, NOW(), NOW())");
+            $stmtIns->bindParam(':user_id', $_SESSION['user_id']);
+            $stmtIns->bindParam(':name', $_SESSION['username']);
+            $stmtIns->bindParam(':score', $points);
+            $stmtIns->execute();
+            // keep session user score
+            $_SESSION['muziek_score'] = ($_SESSION['muziek_score'] ?? 0) + $points;
+        } else {
+            $_SESSION['guest_scores'][$_SESSION['songToGuess']] = $points;
+        }
 
     } elseif ($attempts >= $maxAttempts) {
         $result = "💀 Game over! Het woord was: <b>$songToGuess</b>";
