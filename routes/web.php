@@ -7,15 +7,39 @@ use Illuminate\Support\Facades\DB;
 Route::get('/', function (Request $request) {
     session_start();
     $userId = $_SESSION['user_id'] ?? null;
-    $games = DB::table('games')->get();
     $favoriteIds = [];
-    if ($userId) {
-        $favoriteIds = DB::table('favorites')->where('user_id', $userId)->pluck('game_id')->toArray();
-    } else {
+    try {
+        $games = DB::table('games')->get();
+
+        // If table exists but is empty, fallback to default list and show a helpful message
+        if ($games->isEmpty()) {
+            $games = collect([
+                (object)['id' => 1, 'name' => 'Wordle', 'slug' => 'wordle', 'route' => 'wordle'],
+                (object)['id' => 2, 'name' => 'Muziek', 'slug' => 'muziek', 'route' => 'muziek'],
+            ]);
+            $message = 'Geen games gevonden in de database — tijdelijk lokale games geladen. Voer migraties/seeders uit om dit permanent te maken.';
+        } else {
+            $message = null;
+        }
+
+        if ($userId) {
+            $favoriteIds = DB::table('favorites')->where('user_id', $userId)->pluck('game_id')->toArray();
+        } else {
+            $favoriteIds = $_SESSION['guest_favorites'] ?? [];
+            if (!is_array($favoriteIds)) $favoriteIds = [];
+        }
+    } catch (\Throwable $e) {
+        // DB or tables missing — fall back to a minimal in-memory list so the page still works
+        $games = collect([
+            (object)['id' => 1, 'name' => 'Wordle', 'slug' => 'wordle', 'route' => 'wordle'],
+            (object)['id' => 2, 'name' => 'Muziek', 'slug' => 'muziek', 'route' => 'muziek'],
+        ]);
+        $message = 'Database niet beschikbaar of tabellen ontbreken. Games worden tijdelijk lokaal geladen.';
         $favoriteIds = $_SESSION['guest_favorites'] ?? [];
         if (!is_array($favoriteIds)) $favoriteIds = [];
     }
-    return view('welcome', ['games' => $games, 'favoriteIds' => $favoriteIds]);
+
+    return view('welcome', ['games' => $games, 'favoriteIds' => $favoriteIds, 'message' => $message ?? null]);
 })->name('welcome');
 
 // Favorite toggle (supports guests via session)

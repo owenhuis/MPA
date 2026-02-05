@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome Page</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body>
     <header>
@@ -14,6 +14,12 @@
     </header>
     <div class="container">
         <h1>Welcome to my multi game page</h1>
+        @if(!empty($message))
+            <div class="flash">{{ $message }}</div>
+        @endif
+        @if(count($games) === 0)
+            <div class="flash">Geen games beschikbaar. Voer <code>php artisan migrate --seed</code> uit om games toe te voegen.</div>
+        @endif
     </div>
     <div class="favoriteFilters">
         <h2>Choose your game:</h2>

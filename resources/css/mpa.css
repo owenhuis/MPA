@@ -1,81 +1,79 @@
-.wordle{
-    body {
-        font-family: Arial, sans-serif;
-        background-color: #121213;
-        color: #ffffff;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .wordle-board {
-        margin-top: 20px;
-    }
-
-    .row {
-        display: flex;
-    }
-
-    .tile {
-        width: 52px;
-        height: 52px;
-        border: 2px solid #3a3a3c;
-        margin: 3px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 2rem;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-
-    .tile.green {
-        background-color: #538d4e;
-        border-color: #538d4e;
-    }
-
-    .tile.yellow {
-        background-color: #b59f3b;
-        border-color: #b59f3b;
-    }
-
-    .tile.gray {
-        background-color: #3a3a3c;
-        border-color: #3a3a3c;
-    }
-    .char {
-        width: 52px;
-        height: 52px;
-        text-align: center;
-        font-size: 2rem;
-        margin: 3px;
-        text-transform: uppercase;
-    }
-    .guess-inputs {
-        margin-top: 30px;
-        display: flex;
-        justify-content: center;
-    }
-
-    .guess-inputs input {
-        width: 52px;
-        height: 52px;
-        margin: 3px;
-        font-size: 2rem;
-        text-align: center;
-        text-transform: uppercase;
-        border: 2px solid #565758;
-        background-color: #121213;
-        color: white;
-    }
-
-    .guess-inputs input:focus {
-        outline: none;
-        border-color: #538d4e; /* groen focus */
-    }
+html.wordle, html.wordle body {
+    font-family: Arial, sans-serif;
+    background-color: #121213;
+    color: #ffffff;
+    min-height: 100vh;
 }
 
-.login { 
+html.wordle .wordle-board {
+    margin-top: 20px;
+}
+
+html.wordle .row {
+    display: flex;
+}
+
+html.wordle .tile {
+    width: 52px;
+    height: 52px;
+    border: 2px solid #3a3a3c;
+    margin: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+html.wordle .tile.green {
+    background-color: #538d4e;
+    border-color: #538d4e;
+}
+
+html.wordle .tile.yellow {
+    background-color: #b59f3b;
+    border-color: #b59f3b;
+}
+
+html.wordle .tile.gray {
+    background-color: #3a3a3c;
+    border-color: #3a3a3c;
+}
+
+html.wordle .char {
+    width: 52px;
+    height: 52px;
+    text-align: center;
+    font-size: 2rem;
+    margin: 3px;
+    text-transform: uppercase;
+}
+
+html.wordle .guess-inputs {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+}
+
+html.wordle .guess-inputs input {
+    width: 52px;
+    height: 52px;
+    margin: 3px;
+    font-size: 2rem;
+    text-align: center;
+    text-transform: uppercase;
+    border: 2px solid #565758;
+    background-color: #121213;
+    color: white;
+}
+
+html.wordle .guess-inputs input:focus {
+    outline: none;
+    border-color: #538d4e; /* groen focus */
+}
+
+html.login {
     background: linear-gradient(135deg, #121213 0%, #1a1a1c 100%);
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: #ffffff;
@@ -85,12 +83,16 @@
     justify-content: center;
     margin: 0;
     padding: 20px;
-
-body {
-    margin: 0;
 }
 
- h1 {
+/* Ensure body also uses the dark login background so global body rules don't override it */
+html.login body {
+    margin: 0;
+    background: linear-gradient(135deg, #121213 0%, #1a1a1c 100%);
+}
+
+
+html.login h1 {
     text-align: center;
     font-size: 3rem;
     margin-bottom: 40px;
@@ -103,7 +105,7 @@ body {
     text-transform: uppercase;
 }
 
- form {
+html.login form {
     background-color: #1e1e20;
     padding: 40px;
     border-radius: 12px;
@@ -113,11 +115,11 @@ body {
     margin-bottom: 20px;
 }
 
- form:last-of-type {
+html.login form:last-of-type {
     margin-bottom: 0;
 }
 
- label {
+html.login label {
     display: block;
     margin-top: 20px;
     margin-bottom: 8px;
@@ -128,12 +130,13 @@ body {
     letter-spacing: 0.5px;
 }
 
- label:first-of-type {
+html.login label:first-of-type {
     margin-top: 0;
 }
 
- input[type="text"],
- input[type="password"] {
+html.login input[type="text"],
+html.login input[type="password"],
+html.login input[type="email"] {
     width: 100%;
     padding: 12px 16px;
     margin-bottom: 16px;
@@ -146,20 +149,22 @@ body {
     transition: all 0.3s ease;
 }
 
- input[type="text"]:focus,
- input[type="password"]:focus {
+html.login input[type="text"]:focus,
+html.login input[type="password"]:focus,
+html.login input[type="email"]:focus {
     outline: none;
     border-color: #538d4e;
     background-color: #3a3a3d;
     box-shadow: 0 0 0 3px rgba(83, 141, 78, 0.1);
 }
 
- input[type="text"]::placeholder,
- input[type="password"]::placeholder {
+html.login input[type="text"]::placeholder,
+html.login input[type="password"]::placeholder,
+html.login input[type="email"]::placeholder {
     color: #888;
 }
 
- button {
+html.login button {
     width: 100%;
     padding: 14px 20px;
     margin-top: 24px;
@@ -176,45 +181,294 @@ body {
     box-shadow: 0 4px 12px rgba(83, 141, 78, 0.3);
 }
 
-button:hover {
+html.login button:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(83, 141, 78, 0.4);
     background: linear-gradient(135deg, #6ba45f 0%, #78b366 100%);
 }
 
-button:active {
+html.login button:active {
     transform: translateY(0);
     box-shadow: 0 2px 8px rgba(83, 141, 78, 0.2);
 }
 
-form:last-of-type button {
+html.login form:last-of-type button {
     background: linear-gradient(135deg, #5e5e61 0%, #6b6b6e 100%);
     box-shadow: 0 4px 12px rgba(94, 94, 97, 0.3);
 }
 
-form:last-of-type button:hover {
+html.login form:last-of-type button:hover {
     background: linear-gradient(135deg, #6b6b6e 0%, #787a7d 100%);
     box-shadow: 0 6px 20px rgba(94, 94, 97, 0.4);
 }
 
-br {
-    display: none;
-}
+html.login br { display: none; }
 
 @media (max-width: 480px) {
-    .login h1 {
+    html.login h1 {
         font-size: 2rem;
         margin-bottom: 30px;
     }
 
-    .login form {
+    html.login form {
         padding: 30px;
     }
 
-    .login input[type="text"],
-    .login input[type="password"] {
+    html.login input[type="text"],
+    html.login input[type="password"],
+    html.login input[type="email"] {
         padding: 10px 14px;
         font-size: 16px;
     }
 }
+
+/* secondary link style for small actions on the auth pages */
+html.login a.secondary {
+    display: inline-block;
+    padding: 12px 18px;
+    margin-top: 10px;
+    background: linear-gradient(135deg, #5e5e61 0%, #6b6b6e 100%);
+    color: #ffffff;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
 }
+
+html.login a.secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(94,94,97,0.3);
+}
+
+
+/* General site styles for non-game blades */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(180deg, #f7fafc 0%, #eef2f6 100%);
+    color: #1f2937;
+    margin: 0;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 24px;
+    background: #ffffff;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 2px 8px rgba(31,41,55,0.04);
+}
+
+header h1 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.container {
+    max-width: 980px;
+    margin: 28px auto;
+    padding: 0 20px;
+}
+
+.favoriteFilters {
+    max-width: 980px;
+    margin: 6px auto 12px;
+    padding: 0 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.toGames {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px auto;
+    max-width: 980px;
+    padding: 8px 20px;
+    background: #ffffff;
+    border: 1px solid #e6e9ee;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(31,41,55,0.03);
+}
+
+.toGames button {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.toGames form button {
+    background: transparent;
+    color: #f59e0b; /* amber star color */
+    border: none;
+    font-size: 1.1rem;
+    padding: 6px 10px;
+}
+
+.toGames a button:hover,
+.toGames button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37,99,235,0.12);
+}
+
+/* Favorites view */
+.container .toGames a {
+    margin-right: 8px;
+}
+
+/* Leaderboard */
+ol {
+    max-width: 720px;
+    margin: 18px auto;
+    padding: 0 20px 24px;
+    background: #fff;
+    border: 1px solid #e6e9ee;
+    border-radius: 8px;
+    box-shadow: 0 6px 20px rgba(31,41,55,0.03);
+}
+
+ol li {
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+ol li:nth-child(1) {
+    background: linear-gradient(90deg, rgba(245,158,11,0.06), transparent);
+}
+
+ol li small {
+    color: #6b7280;
+    font-size: 0.85rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 640px) {
+    .toGames { padding: 10px; flex-direction: column; align-items: stretch; }
+    .toGames button { width: 100%; }
+    ol { margin: 12px 8px; }
+}
+
+/* Utility */
+button.secondary {
+    background: #f3f4f6;
+    color: #111827;
+    border: 1px solid #e5e7eb;
+}
+
+/* Small visual enhancement for messages */
+.flash {
+    max-width: 720px;
+    margin: 12px auto;
+    padding: 12px 16px;
+    border-radius: 8px;
+    background: #e6fffa;
+    color: #055160;
+    border: 1px solid #bde5df;
+}
+
+/* Wordle page overrides: ensure dark background and centered layout (higher specificity) */
+html.wordle body {
+    /* override any background-image from global body (use shorthand to remove gradients) */
+    background: #121213 !important;
+    background-image: none !important;
+    color: #ffffff !important;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 20px 0;
+}
+
+/* hide site header if present on this page */
+html.wordle header { display: none !important; }
+
+html.wordle h1 {
+    color: #ffffff;
+    margin: 8px 0 12px;
+    text-align: center;
+    font-size: 2rem;
+}
+
+html.wordle .wordle-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+html.wordle .row { justify-content: center; }
+
+html.wordle .guess-inputs {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+    width: 100%;
+}
+
+html.wordle .guess-inputs form { display: flex; gap: 8px; align-items: center; justify-content: center; }
+
+html.wordle button {
+    background: linear-gradient(135deg, #538d4e 0%, #6ba45f 100%);
+    color: #ffffff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 700;
+}
+
+html.wordle button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* small responsive tweaks */
+@media (max-width: 480px) {
+    html.wordle .tile { width: 44px; height: 44px; font-size: 1.6rem; }
+    html.wordle .guess-inputs input { width: 44px; height: 44px; font-size: 1.6rem; }
+}
+
+/* Stronger forceful overrides for auth pages to prevent global styles from making them white */
+html.login, html.login body {
+    background: linear-gradient(135deg, #0b0b0c 0%, #121213 100%) !important;
+    color: #ffffff !important;
+    min-height: 100vh !important;
+}
+
+html.login {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+html.login form {
+    background-color: #1e1e20 !important;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* make sure inputs on auth pages remain dark */
+html.login input[type="text"],
+html.login input[type="password"],
+html.login input[type="email"] {
+    background-color: #2d2d30 !important;
+    color: #ffffff !important;
+    border-color: #3a3a3c !important;
+}
+
+/* ensure secondary links are visible */
+html.login a.secondary {
+    background: linear-gradient(135deg, #5e5e61 0%, #6b6b6e 100%) !important;
+    color: #ffffff !important;
+}
+
+/* ensure the login page doesn't pick up the site header styling if present */
+html.login header { display: none !important; }
+
+

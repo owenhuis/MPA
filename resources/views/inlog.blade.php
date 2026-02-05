@@ -183,10 +183,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
             <button type="submit">Registreren</button>
         </form>
-        <form method="GET" action="">
-            <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
-            <button type="submit">Terug naar Login</button>
-        </form>
+        <a class="secondary" href="?referrer=<?php echo urlencode($referrer); ?>">Terug naar Login</a>
     <?php else: ?>
         <h1>Login</h1>
 
@@ -202,11 +199,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
             <button type="submit">Login</button>
         </form>
-        <form method="GET" action="">
-            <input type="hidden" name="register" value="1">
-            <input type="hidden" name="referrer" value="<?php echo htmlspecialchars($referrer); ?>">
-            <button type="submit">Aanmelden</button>
-        </form>
+        <a class="secondary" href="?register=1&referrer=<?php echo urlencode($referrer); ?>">Aanmelden</a>
     <?php endif; ?>
 
 </body>
