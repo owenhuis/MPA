@@ -14,10 +14,10 @@ Route::get('/', function (Request $request) {
         // If table exists but is empty, fallback to default list and show a helpful message
         if ($games->isEmpty()) {
             $games = collect([
-                (object)['id' => 1, 'name' => 'Wordle', 'slug' => 'wordle', 'route' => 'wordle'],
-                (object)['id' => 2, 'name' => 'Muziek', 'slug' => 'muziek', 'route' => 'muziek'],
+                (object)['id' => 1, 'name' => 'Wordle', 'slug' => 'wordle', 'route' => 'wordle', 'working' => TRUE],
+                (object)['id' => 2, 'name' => 'Muziek', 'slug' => 'muziek', 'route' => 'muziek', 'working' => FALSE],
             ]);
-            $message = 'Geen games gevonden in de database — tijdelijk lokale games geladen. Voer migraties/seeders uit om dit permanent te maken.';
+            $message = 'Geen favoriete games gevonden.';
         } else {
             $message = null;
         }
@@ -31,8 +31,8 @@ Route::get('/', function (Request $request) {
     } catch (\Throwable $e) {
         // DB or tables missing — fall back to a minimal in-memory list so the page still works
         $games = collect([
-            (object)['id' => 1, 'name' => 'Wordle', 'slug' => 'wordle', 'route' => 'wordle'],
-            (object)['id' => 2, 'name' => 'Muziek', 'slug' => 'muziek', 'route' => 'muziek'],
+            (object)['id' => 1, 'name' => 'Wordle', 'slug' => 'wordle', 'route' => 'wordle', 'working' => TRUE],
+            (object)['id' => 2, 'name' => 'Muziek', 'slug' => 'muziek', 'route' => 'muziek', 'working' => FALSE],
         ]);
         $message = 'Database niet beschikbaar of tabellen ontbreken. Games worden tijdelijk lokaal geladen.';
         $favoriteIds = $_SESSION['guest_favorites'] ?? [];

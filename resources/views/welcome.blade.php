@@ -28,12 +28,23 @@
 
     @foreach($games as $game)
     <div class="toGames">
+        @if(isset($game->working) && !$game->working)
+        <a disabled><button>{{ $game->name }}</button></a>
+        <a disabled style="margin-left:8px;"><button>Leaderboard</button></a>
+        
+            <span style="color: red; margin-left: 8px;">(under construction)</span>
+            <form style="display:inline; margin-left:8px;">
+                @csrf
+                <button type="submit" disabled>{{ in_array($game->id, $favoriteIds) ? '★' : '☆' }}</button>
+            </form>
+        @else(isset($game->working) && $game->working)
         <a href="{{ url($game->route) }}"><button>{{ $game->name }}</button></a>
         <a href="{{ route('leaderboard', $game->slug) }}" style="margin-left:8px;"><button>Leaderboard</button></a>
-        <form method="POST" action="{{ route('games.favorite', $game->id) }}" style="display:inline; margin-left:8px;">
-            @csrf
-            <button type="submit">{{ in_array($game->id, $favoriteIds) ? '★' : '☆' }}</button>
-        </form>
+            <form method="POST" action="{{ route('games.favorite', $game->id) }}" style="display:inline; margin-left:8px;">
+                @csrf
+                <button type="submit">{{ in_array($game->id, $favoriteIds) ? '★' : '☆' }}</button>
+            </form>
+        @endif
     </div>
     @endforeach
 </body>
