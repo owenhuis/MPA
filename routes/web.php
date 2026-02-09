@@ -16,6 +16,7 @@ Route::get('/', function (Request $request) {
             $games = collect([
                 (object)['id' => 1, 'name' => 'Wordle', 'slug' => 'wordle', 'route' => 'wordle', 'working' => TRUE],
                 (object)['id' => 2, 'name' => 'Muziek', 'slug' => 'muziek', 'route' => 'muziek', 'working' => FALSE],
+                (object)['id' => 3, 'name' => 'Rock Paper Scissors', 'slug' => 'rock-paper-scissors', 'route' => 'rps', 'working' => TRUE],
             ]);
             $message = 'Geen favoriete games gevonden.';
         } else {
@@ -33,6 +34,7 @@ Route::get('/', function (Request $request) {
         $games = collect([
             (object)['id' => 1, 'name' => 'Wordle', 'slug' => 'wordle', 'route' => 'wordle', 'working' => TRUE],
             (object)['id' => 2, 'name' => 'Muziek', 'slug' => 'muziek', 'route' => 'muziek', 'working' => FALSE],
+            (object)['id' => 3, 'name' => 'Rock Paper Scissors', 'slug' => 'rock-paper-scissors', 'route' => 'rps', 'working' => TRUE],
         ]);
         $message = 'Database niet beschikbaar of tabellen ontbreken. Games worden tijdelijk lokaal geladen.';
         $favoriteIds = $_SESSION['guest_favorites'] ?? [];
@@ -42,7 +44,7 @@ Route::get('/', function (Request $request) {
     return view('welcome', ['games' => $games, 'favoriteIds' => $favoriteIds, 'message' => $message ?? null]);
 })->name('welcome');
 
-// Favorite toggle (supports guests via session)
+// Favorite toggle (werkt ook voor gasten)
 Route::post('/games/{id}/favorite', function (Request $request, $id) {
     session_start();
     $userId = $_SESSION['user_id'] ?? null;
@@ -69,7 +71,7 @@ Route::post('/games/{id}/favorite', function (Request $request, $id) {
     return redirect()->back();
 })->name('games.favorite');
 
-// Store temporary score (guest or session-based for logged in users) and persist for logged in users to leaderboard
+// tijdelijke user score opslag
 Route::post('/games/{id}/score', function (Request $request, $id) {
     session_start();
     $score = $request->input('score');
@@ -97,6 +99,7 @@ Route::post('/games/{id}/score', function (Request $request, $id) {
     return redirect()->back();
 })->name('games.score');
 
+// favorieten pagina
 Route::get('/favorites', function () {
     session_start();
     $userId = $_SESSION['user_id'] ?? null;
@@ -120,27 +123,42 @@ Route::get('/leaderboard/{game?}', function ($game = 'wordle') {
     return view('leaderboard', ['scores' => $scores, 'game' => $game]);
 })->name('leaderboard');
 
+// new woord
 Route::get('/wordle', function () {
     return view('wordle');
 })->name('wordle');
 
+// woord gegokt
 Route::post('/wordle', function (Request $request) {
     return view('wordle');
 })->name('wordle.post');
 
-
+//new nummer
 Route::get('/muziek', function () {
     return view('muziek');
 })->name('muziek');
 
+// nummer gegokt
 Route::post('/muziek', function (Request $request) {
     return view('muziek');
 })->name('muziek.post');
 
+//new rps
+Route::get('/rps', function () {
+    return view('rps');
+})->name('rps');
+
+// rps gegokt
+Route::post('/rps', function (Request $request) {
+    return view('rps');
+})->name('rps.post');
+
+//inlog
 Route::get('/inlog', function () {
     return view('inlog');
 })->name('inlog');
 
+// registratie
 Route::post('/inlog', function (Request $request) {
     return view('inlog');
 })->name('inlog.post');
