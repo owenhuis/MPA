@@ -171,6 +171,28 @@ Route::post('/rps', function (Request $request) {
     return view('rps');
 })->name('rps.post');
 
+// rps score save
+Route::post('/rps/save', function (Request $request) {
+    session_start();
+    $userId = $_SESSION['user_id'] ?? null;
+    $score = $request->input('score', 0);
+
+    if ($userId) {
+        $_SESSION['rps_score'] = ($userId ? (DB::table('leaderboard_scores')->where('user_id', $userId)->where('game', 'rps')->sum('score') ?? 0) : 0) + $score;
+        DB::table('leaderboard_scores')->insert([
+            'user_id' => $userId,
+            'name' => $_SESSION['username'] ?? 'User',
+            'game' => 'rps',
+            'score' => $score,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+    } else {
+        $_SESSION['guest_scores']['rps'] = ($userId ? 0 : ($_SESSION['guest_scores']['rps'] ?? 0)) + $score;
+    }
+    return response()->json(['success' => true]);
+})->name('rps.save');
+
 //inlog
 Route::get('/inlog', function () {
     return view('inlog');

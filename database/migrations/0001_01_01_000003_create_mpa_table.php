@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('naam');
             $table->float('wordle_score');
             $table->float('muziek_score');
+            $table->float('rps_score');
         });
     }
 
