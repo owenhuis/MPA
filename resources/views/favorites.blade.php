@@ -16,7 +16,12 @@
         @if(count($games) > 0)
             @foreach($games as $game)
                 <div class="toGames">
+                    @if(isset($game->working) && !$game->working)
+                        <a disabled><button>{{ $game->name }}</button></a>
+                        <span style="color: red; margin-left: 8px;">(under construction)</span>
+                    @else
                     <a href="{{ url($game->route) }}"><button>{{ $game->name }}</button></a>
+                    @endif
                     <form method="POST" action="{{ route('games.favorite', $game->id) }}" style="display:inline;">
                         @csrf
                         <button type="submit">Verwijder</button>

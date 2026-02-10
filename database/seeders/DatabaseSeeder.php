@@ -98,5 +98,7 @@ class DatabaseSeeder extends Seeder
 
         // Seed leaderboard dummy scores
         $this->call(\Database\Seeders\LeaderboardSeeder::class);
+        // Seed games
+        $this->call(\Database\Seeders\GameSeeder::class);
     }
 }

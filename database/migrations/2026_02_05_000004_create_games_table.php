@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('route')->nullable();
             $table->text('description')->nullable();
+            $table->boolean('working')->default(true);
             $table->timestamps();
         });
     }

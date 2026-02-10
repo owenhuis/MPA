@@ -9,8 +9,11 @@
 <body>
     <header>
         <h1>Welcome Page</h1>
-
-        <button onclick="window.location='{{ route('inlog') }}'"> Inloggen</button>
+        @auth
+            <span>Welkom, {{ auth()->users()->username }}</span>
+        @else
+            <button onclick="window.location='{{ route('inlog') }}'">Inloggen</button>
+        @endauth
     </header>
     <div class="container">
         <h1>Welcome to my multi game page</h1>
@@ -33,9 +36,9 @@
         <a disabled style="margin-left:8px;"><button>Leaderboard</button></a>
         
             <span style="color: red; margin-left: 8px;">(under construction)</span>
-            <form style="display:inline; margin-left:8px;">
+            <form method="POST" action="{{ route('games.favorite', $game->id) }}" style="display:inline; margin-left:8px;">
                 @csrf
-                <button type="submit" disabled>{{ in_array($game->id, $favoriteIds) ? '★' : '☆' }}</button>
+                <button type="submit">{{ in_array($game->id, $favoriteIds) ? '★' : '☆' }}</button>
             </form>
         @else(isset($game->working) && $game->working)
         <a href="{{ url($game->route) }}"><button>{{ $game->name }}</button></a>

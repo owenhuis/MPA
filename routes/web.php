@@ -49,6 +49,24 @@ Route::post('/games/{id}/favorite', function (Request $request, $id) {
     session_start();
     $userId = $_SESSION['user_id'] ?? null;
     $id = (int)$id;
+    
+    // If a session user_id is set but the user record no longer exists,
+    // clear the session user and treat the request as a guest to avoid FK errors.
+    if ($userId) {
+        $userExists = DB::table('users')->where('id', $userId)->exists();
+        if (!$userExists) {
+            unset($_SESSION['user_id']);
+            unset($_SESSION['username']);
+            $userId = null;
+        }
+    }
+
+    // Check if game exists
+    $gameExists = DB::table('games')->where('id', $id)->exists();
+    if (!$gameExists) {
+        return redirect()->back()->with('error', 'Game niet gevonden.');
+    }
+    
     if ($userId) {
         $exists = DB::table('favorites')->where('user_id', $userId)->where('game_id', $id)->exists();
         if ($exists) {
