@@ -135,7 +135,7 @@ Route::get('/favorites', function () {
     return view('favorites', ['games' => $games]);
 })->name('favorites');
 
-// Game info
+// Game info (i)
 Route::get('/games/{id}/info', function ($id) {
     $game = DB::table('games')->where('id', $id)->first();
     if (!$game) {
@@ -147,9 +147,35 @@ Route::get('/games/{id}/info', function ($id) {
     ]);
 })->name('games.info');
 
-// Leaderboard
+// Leaderboard info 
 Route::get('/leaderboard/{game?}', function ($game = 'wordle') {
-    $scores = DB::table('leaderboard_scores')->where('game', $game)->orderByDesc('score')->limit(10)->get();
+    try {
+        $gameKey = strtolower(trim($game));
+        // If a games table entry exists for this slug, use its route/key (e.g., rock-paper-scissors -> rps)
+        $gameRow = DB::table('games')->whereRaw('LOWER(slug) = ?', [$gameKey])->first();
+        if ($gameRow && !empty($gameRow->route)) {
+            $gameKey = strtolower($gameRow->route);
+        }
+
+        $scores = DB::table('leaderboard_scores')
+            ->whereRaw('LOWER(game) = ?', [$gameKey])
+            ->orderByDesc('score')
+            ->limit(10)
+            ->get();
+
+        // If no scores found, try fallback where game contains the key (handles partial matches)
+        if ($scores->isEmpty()) {
+            $scores = DB::table('leaderboard_scores')
+                ->where('game', 'like', "%{$gameKey}%")
+                ->orderByDesc('score')
+                ->limit(10)
+                ->get();
+        }
+    } catch (\Throwable $e) {
+        // Table missing or DB error: fallback to seeded in-memory values
+        $scores = collect([]);
+    }
+
     return view('leaderboard', ['scores' => $scores, 'game' => $game]);
 })->name('leaderboard');
 
@@ -199,8 +225,35 @@ Route::post('/rps/save', function (Request $request) {
             'created_at' => now(),
             'updated_at' => now(),
         ]);
+        // Update (or create) aggregate score in `scores` table for this user
+        $userName = $_SESSION['username'] ?? null;
+        if ($userName) {
+            $existing = DB::table('scores')->where('naam', $userName)->first();
+            if ($existing) {
+                DB::table('scores')->where('naam', $userName)->update([
+                    'rps_score' => ($existing->rps_score ?? 0) + $score,
+                ]);
+            } else {
+                DB::table('scores')->insert([
+                    'naam' => $userName,
+                    'wordle_score' => 0,
+                    'muziek_score' => 0,
+                    'rps_score' => $score,
+                ]);
+            }
+        }
     } else {
-        $_SESSION['guest_scores']['rps'] = ($userId ? 0 : ($_SESSION['guest_scores']['rps'] ?? 0)) + $score;
+        // Store guest score in session
+        $_SESSION['guest_scores']['rps'] = ($_SESSION['guest_scores']['rps'] ?? 0) + $score;
+        // Also persist anonymous entry so leaderboard shows guest submissions
+        DB::table('leaderboard_scores')->insert([
+            'user_id' => null,
+            'name' => $_SESSION['username'] ?? 'Guest',
+            'game' => 'rps',
+            'score' => $score,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
     }
     return response()->json(['success' => true]);
 })->name('rps.save');

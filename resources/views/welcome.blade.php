@@ -22,13 +22,38 @@
     <script>
         function openInfoModal(gameId) {
             fetch('/games/' + gameId + '/info')
-                .then(response => response.json())
+                .then(response => {
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    return response.json();
+                })
                 .then(data => {
                     document.getElementById('infoTitle').textContent = data.name;
                     document.getElementById('infoDescription').textContent = data.description;
                     document.getElementById('infoModal').style.display = 'block';
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error fetching game info:', error);
+                    document.getElementById('infoTitle').textContent = 'Info';
+                    document.getElementById('infoDescription').textContent = 'Geen beschrijving beschikbaar.';
+                    document.getElementById('infoModal').style.display = 'block';
+                });
+        }
+
+        function openInfoModalFromData(el) {
+            const name = el.dataset.gameName;
+            const desc = el.dataset.gameDesc;
+            const id = el.dataset.gameId;
+            if (name || desc) {
+                document.getElementById('infoTitle').textContent = name || 'Info';
+                document.getElementById('infoDescription').textContent = desc || 'Geen beschrijving beschikbaar.';
+                document.getElementById('infoModal').style.display = 'block';
+            } else if (id) {
+                openInfoModal(id);
+            } else {
+                document.getElementById('infoTitle').textContent = 'Info';
+                document.getElementById('infoDescription').textContent = 'Geen beschrijving beschikbaar.';
+                document.getElementById('infoModal').style.display = 'block';
+            }
         }
         
         function closeInfoModal() {
@@ -70,7 +95,7 @@
         @if(isset($game->working) && !$game->working)
         <a disabled><button>{{ $game->name }}</button></a>
         <a disabled style="margin-left:8px;"><button>Leaderboard</button></a>
-        <button onclick="openInfoModal({{ $game->id }})" style="margin-left:8px; background:#17a2b8; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">ℹ️</button>
+        <button onclick="openInfoModalFromData(this)" data-game-id="{{ $game->id }}" data-game-name="{{ $game->name }}" data-game-desc="{{ isset($game->description) ? e($game->description) : 'Geen beschrijving beschikbaar.' }}" style="margin-left:8px; background:#17a2b8; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">ℹ️</button>
             <span style="color: red; margin-left: 8px;">(under construction)</span>
             <form method="POST" action="{{ route('games.favorite', $game->id) }}" style="display:inline; margin-left:8px;">
                 @csrf
@@ -79,7 +104,7 @@
         @else(isset($game->working) && $game->working)
         <a href="{{ url($game->route) }}"><button>{{ $game->name }}</button></a>
         <a href="{{ route('leaderboard', $game->slug) }}" style="margin-left:8px;"><button>Leaderboard</button></a>
-        <button onclick="openInfoModal({{ $game->id }})" style="margin-left:8px; background:#17a2b8; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">ℹ️</button>
+        <button onclick="openInfoModalFromData(this)" data-game-id="{{ $game->id }}" data-game-name="{{ $game->name }}" data-game-desc="{{ isset($game->description) ? e($game->description) : 'Geen beschrijving beschikbaar.' }}" style="margin-left:8px; background:#17a2b8; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;">ℹ️</button>
             <form method="POST" action="{{ route('games.favorite', $game->id) }}" style="display:inline; margin-left:8px;">
                 @csrf
                 <button type="submit">{{ in_array($game->id, $favoriteIds) ? '★' : '☆' }}</button>

@@ -17,23 +17,20 @@
 <div id="result" class="rps-result"></div>
 <script>
     function sendScore(points) {
-        <?php
-        //pdo
-        $servername = "localhost";
-        $username = "root";
-        $password = "";
-        $dbname = "laravel";
-
-        // Maak verbinding met de database
-        $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        $stmt = $pdo->prepare("UPDATE scores SET rps_score = :rps_score WHERE naam = :naam");
-            $stmt->bindParam(':rps_score', $points);
-            $stmt->bindParam(':naam', $_SESSION['username']);
-            $stmt->execute();
-        ?>
-        return window.location="{{ route('welcome') }}";
+        fetch('{{ route("rps.save") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify({ score: points })
+        })
+        .then(response => response.json())
+        .then(() => window.location = '{{ route("welcome") }}')
+        .catch(err => {
+            console.error('Failed to save score', err);
+            window.location = '{{ route("welcome") }}';
+        });
     }
 
     const choices = ['rock', 'paper', 'scissors'];
