@@ -5,7 +5,8 @@
 </head>
 <body>
 <script>
-    score = 0;
+    var score = 0;
+    var hoogsteScore = 0;
 </script>
 <h1>Rock Paper Scissors</h1>
 <div class="rps-container">
@@ -16,16 +17,23 @@
 <div id="result" class="rps-result"></div>
 <script>
     function sendScore(points) {
-        fetch('{{ route("rps.save") }}', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            },
-            body: JSON.stringify({ score: points })
-        })
-        .then(() => window.location = '{{ route("welcome") }}')
-        .catch(error => console.error('Error:', error));
+        <?php
+        //pdo
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $dbname = "laravel";
+
+        // Maak verbinding met de database
+        $pdo = new PDO("mysql:host=$servername;dbname=$dbname;charset=utf8mb4", $username, $password);
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+        $stmt = $pdo->prepare("UPDATE scores SET rps_score = :rps_score WHERE naam = :naam");
+            $stmt->bindParam(':rps_score', $points);
+            $stmt->bindParam(':naam', $_SESSION['username']);
+            $stmt->execute();
+        ?>
+        return window.location="{{ route('welcome') }}";
     }
 
     const choices = ['rock', 'paper', 'scissors'];
@@ -49,7 +57,13 @@
                 score += 1;
             } else {
                 result = "Computer wins!";
-                // score = 0;
+                if (score > hoogsteScore) {
+                    hoogsteScore = score;
+                }
+                else {
+                    score = 0;
+                }
+                
             }
 
             resultDiv.textContent = `You chose ${userChoice}, computer chose ${computerChoice}. ${result}`;
@@ -57,7 +71,7 @@
     });
 </script>
 <div class="toGames">
-    <button onclick="sendScore(score)"> Terug naar welkom</button>
+    <button onclick="sendScore(hoogsteScore)"> Terug naar welkom</button>
 </div>
 
 </body>

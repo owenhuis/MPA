@@ -135,6 +135,18 @@ Route::get('/favorites', function () {
     return view('favorites', ['games' => $games]);
 })->name('favorites');
 
+// Game info
+Route::get('/games/{id}/info', function ($id) {
+    $game = DB::table('games')->where('id', $id)->first();
+    if (!$game) {
+        return response()->json(['error' => 'Game not found'], 404);
+    }
+    return response()->json([
+        'name' => $game->name,
+        'description' => $game->description ?? 'Geen beschrijving beschikbaar.'
+    ]);
+})->name('games.info');
+
 // Leaderboard
 Route::get('/leaderboard/{game?}', function ($game = 'wordle') {
     $scores = DB::table('leaderboard_scores')->where('game', $game)->orderByDesc('score')->limit(10)->get();

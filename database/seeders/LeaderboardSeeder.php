@@ -32,5 +32,13 @@ class LeaderboardSeeder extends Seeder
             ['user_id' => null, 'name' => 'funny-song-guy', 'game' => 'muziek', 'score' => 4400, 'created_at' => $now, 'updated_at' => $now],
             ['user_id' => null, 'name' => 'anonymous', 'game' => 'muziek', 'score' => 4200, 'created_at' => $now, 'updated_at' => $now],
         ]);
+        // Dummy RPS top scores
+        DB::table('leaderboard_scores')->insert([
+            ['user_id' => null, 'name' => 'bob', 'game' => 'rps', 'score' => 10, 'created_at' => $now, 'updated_at' => $now],
+            ['user_id' => null, 'name' => 'john', 'game' => 'rps', 'score' => 9, 'created_at' => $now, 'updated_at' => $now],
+            ['user_id' => null, 'name' => 'coolgamer420', 'game' => 'rps', 'score' => 8, 'created_at' => $now, 'updated_at' => $now],
+            ['user_id' => null, 'name' => 'crazyguy69', 'game' => 'rps', 'score' => 7, 'created_at' => $now, 'updated_at' => $now],
+            ['user_id' => null, 'name' => 'funnynumber1', 'game' => 'rps', 'score' => 6, 'created_at' => $now, 'updated_at' => $now],
+        ]);
     }
 }
