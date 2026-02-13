@@ -67,7 +67,7 @@
             }
         }
     </script>
-    
+     
     <header>
         <h1>Welcome Page</h1>
         @auth
